@@ -1,0 +1,31 @@
+# Decionis MCP (@decionis/mcp)
+
+> Stdio Model Context Protocol server plus native PreToolUse execution hooks that let AI coding agents (Claude Code, Cursor, Codex, GitHub Copilot) read a repository's DECIONIS_POLICY.md and evaluate candidate actions before they run — locally, with zero network, zero credentials, and nothing recorded. Verdict vocabulary: allow / block / restrain / escalate (API outcomes APPROVE / REJECT / REVIEW / ESCALATE are normalized).
+
+Quickstart:
+
+- Run the server: `npx -y @decionis/mcp` (no install needed)
+- Claude Code: `claude mcp add decionis -- npx -y @decionis/mcp`
+- Codex (`.codex/config.toml`): `[mcp_servers.decionis]` with `command = "npx"`, `args = ["-y", "@decionis/mcp"]`
+- MCP tools: `decionis_read_policy`, `decionis_evaluate`, `decionis_verdict_help`
+- Policy file resolution: tool `path` argument → `$DECIONIS_POLICY_PATH` → `./DECIONIS_POLICY.md`
+- Native hooks: `npm install -g @decionis/mcp` → `decionis-agent-hook` for codex | copilot | claude; local mode by default, remote mode via `DECIONIS_AGENT_GATE_MODE=remote` + `DECIONIS_API_KEY` + `DECIONIS_ORG_ID`
+
+## Docs
+
+- [MCP protocol docs](https://decionis.com/docs/protocol-mcp?utm_source=github&utm_medium=llms_txt&utm_campaign=dev_discovery): Setup and reference for the Decionis MCP surfaces
+- [npm package](https://www.npmjs.com/package/@decionis/mcp): Published package and full usage README
+- MCP surface description: https://decionis.com/.well-known/mcp.json
+- API contract: https://decionis.com/.well-known/openapi.json
+- [Policy Exchange](https://decionis.com/policy-exchange?utm_source=github&utm_medium=llms_txt&utm_campaign=dev_discovery): Forkable policy templates (e.g. claude-code-destructive-shell-gate)
+
+## Try it
+
+- [Sandbox](https://decionis.com/sandbox?utm_source=github&utm_medium=llms_txt&utm_campaign=dev_discovery): Run a live policy check without an account
+- [Board](https://board.decionis.com/?utm_source=github&utm_medium=llms_txt&utm_campaign=dev_discovery): Console for policies, verdicts, and Decision Dossiers
+
+## Related
+
+- [Decionis Action Gate](https://github.com/decionis/govern): The same gate as a GitHub Action for CI/CD pipelines
+- [Decionis](https://decionis.com/?utm_source=github&utm_medium=llms_txt&utm_campaign=dev_discovery): The deterministic decision layer between intent and execution
+- [Security policy](https://github.com/decionis/.github/blob/master/SECURITY.md): Vulnerability disclosure process and SLAs
