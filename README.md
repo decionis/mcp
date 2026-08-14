@@ -6,16 +6,21 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-protocol--mcp-1f6feb)](https://decionis.com/docs/protocol-mcp?utm_source=github&utm_medium=org_readme&utm_campaign=dev_discovery)
 
-It is not a re-implementation: `decionis_evaluate` boots the real `@decionis/protocol` evaluator in-process, publishes your repo policy through the protocol's own schema-validated bundle ingestion, and evaluates through the same path the platform uses. **The verdict an agent sees locally is the verdict the platform would produce.**
+It is not a re-implementation: `decionis_evaluate` boots the platform's own evaluator — bundled into this package — in-process, publishes your repo policy through the protocol's schema-validated bundle ingestion, and evaluates through the same path the hosted service uses. **The verdict an agent sees locally is the verdict the platform would produce.**
 
 ## 60-second setup
 
-No install needed — every client below launches the server with `npx -y @decionis/mcp`.
+No install needed — every client below launches the server with `npx`. The package ships three
+executables, so name the one you want with `--package`:
+
+```bash
+npx -y --package=@decionis/mcp decionis-mcp
+```
 
 **Claude Code** — one command:
 
 ```bash
-claude mcp add decionis -- npx -y @decionis/mcp
+claude mcp add decionis -- npx -y --package=@decionis/mcp decionis-mcp
 ```
 
 or `.mcp.json` at the repo root:
@@ -25,7 +30,7 @@ or `.mcp.json` at the repo root:
   "mcpServers": {
     "decionis": {
       "command": "npx",
-      "args": ["-y", "@decionis/mcp"]
+      "args": ["-y", "--package=@decionis/mcp", "decionis-mcp"]
     }
   }
 }
@@ -36,11 +41,14 @@ or `.mcp.json` at the repo root:
 ```toml
 [mcp_servers.decionis]
 command = "npx"
-args = ["-y", "@decionis/mcp"]
+args = ["-y", "--package=@decionis/mcp", "decionis-mcp"]
 required = true
 ```
 
 **Cursor** — use the same server block as Claude Code in `.cursor/mcp.json`.
+
+Prefer a global install? `npm install -g @decionis/mcp` puts `decionis-mcp` on your `PATH`, and
+every config above simplifies to `"command": "decionis-mcp"`.
 
 ## Tools
 
@@ -54,25 +62,44 @@ The policy file resolves from the tool's `path` argument, then `$DECIONIS_POLICY
 
 ## Write your policy
 
-`DECIONIS_POLICY.md` is plain Markdown at your repo root — rules the way your team already thinks:
+`DECIONIS_POLICY.md` lives at your repo root. Write whatever prose your team wants around it, but
+**only a fenced ` ```decionis ` block is enforceable** — prose outside the fence is documentation,
+and a file with no block makes `decionis_evaluate` return `no_rules_block`:
 
-```markdown
+````markdown
 # Decionis Policy
 
-## Rules
+Destructive shell commands need a human; agent-authored infra changes wait for review.
 
-### Shell commands
-- **Block** destructive commands (`rm -rf`, `DROP TABLE`) without an approved change request.
-
-### Production deploys
-- **Escalate** any production deploy outside business hours.
-- **Allow** deploys with a green CI run and an approved PR.
-
-### AI-generated changes
-- **Restrain** agent-authored changes that touch deploy, infra, or migration paths until a human signs off.
+```decionis
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "Block destructive shell commands",
+      "priority": 100,
+      "domain": "*",
+      "all": [{ "field": "context.destructive", "op": "eq", "value": true }],
+      "action": "block"
+    },
+    {
+      "name": "Restrain AI-authored infra changes",
+      "priority": 80,
+      "domain": "*",
+      "all": [{ "field": "context.agent_generated", "op": "eq", "value": true }],
+      "action": "restrain"
+    }
+  ]
+}
 ```
+````
 
-Start from a forkable policy on the [Policy Exchange](https://decionis.com/policy-exchange?utm_source=github&utm_medium=org_readme&utm_campaign=dev_discovery) (e.g. `claude-code-destructive-shell-gate`), or see the [annotated example policies](https://github.com/decionis/govern/tree/main/examples) in the govern repo.
+`decionis_read_policy` returns the compiled rules (or the compile errors) so you can check the block
+before relying on it. Start from a forkable policy on the
+[Policy Exchange](https://decionis.com/policy-exchange?utm_source=github&utm_medium=org_readme&utm_campaign=dev_discovery)
+(e.g. `claude-code-destructive-shell-gate`), or copy the fully annotated
+[`examples/DECIONIS_POLICY.md`](https://github.com/decionis/govern/blob/main/examples/DECIONIS_POLICY.md)
+from the govern repo — the same file format governs both surfaces.
 
 ## Native execution hooks — binding enforcement
 
@@ -89,6 +116,15 @@ Copy the provider template (ships inside the package) to its native repository l
 | Codex                                   | `templates/CodexHooks.json`     | `.codex/hooks.json`           |
 | Claude Code                             | `templates/ClaudeSettings.json` | `.claude/settings.json`       |
 | GitHub Copilot CLI / cloud agent / VS Code | `templates/CopilotHooks.json`   | `.github/hooks/Decionis.json` |
+
+The templates ship inside the installed package, so copy them from there — for Claude Code:
+
+```bash
+mkdir -p .claude && cp "$(npm root -g)/@decionis/mcp/templates/ClaudeSettings.json" .claude/settings.json
+```
+
+A `templates/managed/` set (Codex `requirements.toml` pinning, a root-owned Copilot policy hook, and
+an org-controlled Claude settings fragment) ships alongside them for device-management rollouts.
 
 ### Local vs remote evaluation
 
@@ -117,5 +153,5 @@ An `APPROVE` result adds no permission override — the host's normal sandbox an
 **Source of truth** for the published npm package lives in the Decionis platform monorepo; this repository is the public home for setup guides, samples, and issue reports. Bugs and feature requests are welcome here — the [issue forms](https://github.com/decionis/.github/tree/master/ISSUE_TEMPLATE) route them to the right package.
 
 - Gating CI/CD pipelines instead of agents? The same gate is a GitHub Action: [`decionis/govern`](https://github.com/decionis/govern) ([Marketplace](https://github.com/marketplace/actions/decionis-action-gate)).
-- Try a live policy check in the [Sandbox](https://decionis.com/sandbox?utm_source=github&utm_medium=org_readme&utm_campaign=dev_discovery) or open the [Board](https://board.decionis.com/?utm_source=github&utm_medium=org_readme&utm_campaign=dev_discovery).
+- Try a live policy check — no account needed — in the [Sandbox](https://decionis.com/sandbox?utm_source=github&utm_medium=org_readme&utm_campaign=dev_discovery).
 - Security issues: **never** open a public issue — see our [security policy](https://github.com/decionis/.github/blob/master/SECURITY.md) / [security@decionis.com](mailto:security@decionis.com).
