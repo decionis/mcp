@@ -4,9 +4,10 @@
 
 Quickstart:
 
-- Run the server: `npx -y @decionis/mcp` (no install needed)
-- Claude Code: `claude mcp add decionis -- npx -y @decionis/mcp`
-- Codex (`.codex/config.toml`): `[mcp_servers.decionis]` with `command = "npx"`, `args = ["-y", "@decionis/mcp"]`
+- Run the server: `npx -y --package=@decionis/mcp decionis-mcp` (the package ships three bins, so name the one you want; a bare `npx -y @decionis/mcp` cannot resolve an executable)
+- Claude Code: `claude mcp add decionis -- npx -y --package=@decionis/mcp decionis-mcp`
+- Codex (`.codex/config.toml`): `[mcp_servers.decionis]` with `command = "npx"`, `args = ["-y", "--package=@decionis/mcp", "decionis-mcp"]`
+- Policy files are only enforceable via a fenced ```decionis JSON rules block; prose-only files return no_rules_block
 - MCP tools: `decionis_read_policy`, `decionis_evaluate`, `decionis_verdict_help`
 - Policy file resolution: tool `path` argument → `$DECIONIS_POLICY_PATH` → `./DECIONIS_POLICY.md`
 - Native hooks: `npm install -g @decionis/mcp` → `decionis-agent-hook` for codex | copilot | claude; local mode by default, remote mode via `DECIONIS_AGENT_GATE_MODE=remote` + `DECIONIS_API_KEY` + `DECIONIS_ORG_ID`
@@ -22,7 +23,6 @@ Quickstart:
 ## Try it
 
 - [Sandbox](https://decionis.com/sandbox?utm_source=github&utm_medium=llms_txt&utm_campaign=dev_discovery): Run a live policy check without an account
-- [Board](https://board.decionis.com/?utm_source=github&utm_medium=llms_txt&utm_campaign=dev_discovery): Console for policies, verdicts, and Decision Dossiers
 
 ## Related
 
