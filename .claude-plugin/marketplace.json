@@ -1,0 +1,34 @@
+{
+  "name": "decionis",
+  "owner": {
+    "name": "Decionis, Inc.",
+    "url": "https://decionis.com"
+  },
+  "description": "Execution authority for AI agents: refuse a tool call before it runs, using a policy you wrote.",
+  "plugins": [
+    {
+      "name": "decionis",
+      "displayName": "Decionis Execution Authority",
+      "description": "Refuse an agent's tool call before it runs, using a policy you wrote. Evaluated locally through the real Decionis protocol evaluator — no account, no network, no credentials.",
+      "source": {
+        "source": "npm",
+        "package": "@decionis/mcp"
+      },
+      "author": {
+        "name": "Decionis, Inc.",
+        "url": "https://decionis.com"
+      },
+      "homepage": "https://decionis.com/docs/protocol-mcp",
+      "repository": "https://github.com/decionis/mcp",
+      "license": "SEE LICENSE IN LICENSE",
+      "keywords": [
+        "security",
+        "policy",
+        "guardrails",
+        "execution-authority",
+        "agent-safety",
+        "hooks"
+      ]
+    }
+  ]
+}
