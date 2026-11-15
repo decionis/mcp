@@ -47,3 +47,6 @@ The repository's reviewer instructions include independent author/reviewer
 accounts, negative cases and evidence capture. Successful ZIP validation or
 local stdio discovery does not establish directory publication or a live OAuth
 connection; those checks must be recorded for each supported client surface.
+
+[Privacy](https://decionis.com/privacy) · [Terms](https://decionis.com/terms) ·
+[Support](https://decionis.com/contact)
