@@ -1,0 +1,10 @@
+{
+  "name": "decionis",
+  "version": "1.1.0",
+  "description": "Write and review policies, explain decision cases and record your own case decisions in the Decionis workspace.",
+  "author": { "name": "Decionis", "url": "https://decionis.com" },
+  "homepage": "https://decionis.ai/mcp",
+  "repository": "https://github.com/decionis/mcp",
+  "license": "Apache-2.0",
+  "keywords": ["policy", "policy-authoring", "decision-cases", "independent-review"]
+}
