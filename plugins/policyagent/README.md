@@ -1,9 +1,9 @@
-Decionis PolicyAgent for Claude
-==============================
+Decionis for Claude — policies and decision cases
+================================================
 
-This bundle adds the PolicyAgent workflow and the existing remote Decionis MCP
-endpoint. It requires an approved Decionis workspace and the three authoring OAuth
-scopes listed in Consent.md.
+One Decionis plugin provides policy-authoring and decision-cases skills through
+the existing remote MCP endpoint. It requires an approved Decionis workspace, the
+three authoring OAuth scopes and decision:read / decision:write listed in Consent.md.
 
 For Claude web and Desktop/Cowork, import the bundle into your permitted plugin
 marketplace or use the reviewed directory entry once published. The directory
@@ -19,8 +19,12 @@ with citations." Then try: "Prepare a proposal to clarify that clause, preservin
 the sources." Inspect and accept the proposal in the workspace before asking:
 "Request testing review of the saved revision and give me the review link."
 
+For cases, ask: "List the decision cases waiting for me and explain the largest
+held payment." Recording a decision requires your explicit instruction for the
+exact current case and may require a passkey. It never approves a policy.
+
 For Claude Code, prefer the connected Claude account's existing remote connector
-where that surface supports it. Confirm in `/mcp` that the authoring tools are
+where that surface supports it. Confirm in `/mcp` that both workflows' tools are
 present. Do not add a duplicate local HTTP entry that hides the account connector.
 The standalone HTTP configuration requires its own compatible OAuth registration;
 Decionis currently accepts registered HTTPS callbacks and does not support the
@@ -42,6 +46,10 @@ they expire. It does not implement a login or refresh-token store. Start the
 installed `decionis-mcp` executable from that environment. Without the opt-in flag,
 the additional PolicyAgent tools are absent. Existing local execution hooks keep
 their existing behavior.
+
+The local adapter exposes policy-authoring tools only. Decision cases require
+the authenticated remote account connector; missing tools must not be replaced
+with another person's credentials.
 
 The repository's reviewer instructions include independent author/reviewer
 accounts, negative cases and evidence capture. Successful ZIP validation or

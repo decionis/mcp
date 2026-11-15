@@ -20,3 +20,14 @@ audit records already retained by the workspace.
 
 Never place a client secret, access token or refresh token in a prompt, a plugin
 bundle or a checked-in configuration file.
+
+Decision cases use two additional OAuth scopes:
+
+- `decision:read` lets this client list and explain cases the signed-in person may access.
+- `decision:write` lets it record that person's explicit decision on a current case.
+
+Case summaries and evidence returned by tools enter the assistant conversation.
+The service checks membership, authority and the current case revision, and may
+require a Presence passkey. Neither tool confirmation nor a recorded case decision
+approves, signs, activates or deploys a policy. Missing case permissions do not
+authorize switching to a maker's credentials or another identity.
